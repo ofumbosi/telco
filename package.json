@@ -51,10 +51,6 @@
       "parser": "babel-eslint"
     }
   },
-  "engines": {
-    "node": "12.x",
-    "npm": "6.0.0"
-  },
   "postcss": {
     "plugins": {
       "autoprefixer": {}
