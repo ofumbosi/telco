@@ -63,11 +63,11 @@
         <v-layout row justify-start class="mb-3">
         
                 <v-flex xs6  sm4 md12> 
-                <vc-donut v-bind="ninemobile">   <h1><strong>38%</strong> </h1><br> 9Mobile
+                <vc-donut v-bind="ninemobile">   <h1><strong>{{ninemobile.sections[1].value.toFixed(1)}}%</strong> </h1><br> 9Mobile
                 </vc-donut>
                 </v-flex>
               <v-flex xs6  sm4 md12>   
-                <vc-donut v-bind="mtn">  <h1> <strong>35%</strong></h1> <br>MTN
+                <vc-donut v-bind="mtn">  <h1> <strong>{{mtn.sections[1].value.toFixed(1)}}%</strong></h1> <br>MTN
                 </vc-donut>
                 </v-flex>
                 
@@ -76,11 +76,11 @@
         
               
               <v-flex xs6  sm4 md12>
-              <vc-donut v-bind="airtel">   <h1> <strong>28%</strong> </h1><br> Airtel
+              <vc-donut v-bind="airtel">   <h1> <strong>{{airtel.sections[1].value.toFixed(1)}}%</strong> </h1><br> Airtel
                 </vc-donut>
                 </v-flex>
                 <v-flex xs6  sm4 md12>         
-              <vc-donut v-bind="glo">  <h1> <strong>25%</strong> </h1><br> Globacom
+              <vc-donut v-bind="glo">  <h1> <strong>{{glo.sections[1].value.toFixed(1)}}%</strong> </h1><br> Globacom
                 </vc-donut>
                 </v-flex>
          </v-layout>
@@ -99,17 +99,77 @@
   <v-card-title><h1>Reports overview</h1> <v-spacer></v-spacer>
     <v-card  class="pa-1"> 1d <strong>1w</strong> 4w 1y</v-card>
     <v-spacer></v-spacer>
-    <v-card  class="pa-1"> Feb 4, 2021 > Feb, 30, 2020 </v-card>
-     
-      <v-spacer></v-spacer>
-    <v-card  class="pa-1"> <v-tooltip top>
+    <!-- <v-card  class="pa-1"> Feb 4, 2021 > Feb, 30, 2020 </v-card> -->
+     <v-card class='pa-1'>
+         <v-menu
+        v-model="menu2"
+        :close-on-content-click="false"
+        :nudge-right="40"
+        transition="scale-transition"
+        offset-y
+        min-width="auto"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field
+          style='padding:0px;'
+            v-model="dateStart"
+            label="Date Start"
+            readonly
+            v-bind="attrs"
+            v-on="on"
+          ></v-text-field>
+        </template>
+        <v-date-picker
+          v-model="dateStart"
+          @input="menu2 = false"
+        ></v-date-picker>
+      </v-menu>
+     </v-card>
+    <v-spacer></v-spacer>
+     <v-card class='pa-1'>
+         <v-menu
+        v-model="menu"
+        :close-on-content-click="false"
+        :nudge-right="40"
+        transition="scale-transition"
+        offset-y
+        min-width="auto"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field
+          style='padding:0px;'
+            v-model="dateEnd"
+            label="Date End"
+            readonly
+            v-bind="attrs"
+            v-on="on"
+          ></v-text-field>
+        </template>
+        <v-date-picker
+          v-model="dateEnd"
+          @input="menu2 = false"
+        ></v-date-picker>
+      </v-menu>
+     </v-card>
+    <v-spacer></v-spacer>
+
+      <v-card>
+        <v-select
+          :items="['Score(Low to High)','Score(High to Low)','State','Telco','Gender - Female','Gender - Male','Matched','Returned','Processing','Migrated']"
+          label="Sort By"
+          v-model='sortBy'
+          outlined
+        ></v-select>
+      </v-card>
+    <v-spacer></v-spacer>
+
+    <!-- <v-card  class="pa-1"> <v-tooltip top>
           <v-btn small flat color="grey" @click="sortBy('title')" slot="activator">
             <v-icon small left>folder</v-icon>
             <span class="caption text-lowercase">By project name</span>
           </v-btn>
           <span>Sort by project name</span>
         </v-tooltip> </v-card>
-
     <v-spacer></v-spacer>
     <v-card  class="pa-1">  <v-tooltip top>
           <v-btn small flat color="grey" @click="sortBy('person')" slot="activator">
@@ -117,7 +177,7 @@
             <span class="caption text-lowercase">By Person</span>
           </v-btn>
           <span>Sort by name</span>
-        </v-tooltip> </v-card>
+        </v-tooltip> </v-card> -->
          
         
         
@@ -134,17 +194,17 @@
          
                     <v-flex xs12  sm12 md4>
                       <v-card width="`100%`" class="pa-3 mx-2">
-                        <v-card-subtitle>Matched 78 M </v-card-subtitle>
+                        <h3>Matched 78 M </h3>
                       </v-card>
                     </v-flex>
                     <v-flex xs12  sm12 md4>
                               <v-card width="`100%`" class="pa-3  mx-2">
-                                <v-card-subtitle>Processing 40 M </v-card-subtitle>
+                                <h3>Processing 40 M </h3>
                               </v-card>
                     </v-flex>
                     <v-flex xs12  sm12 md4>
                             <v-card width="`100%`" class="pa-3  mx-2">
-                            <v-card-subtitle>  Unmatched 60 M </v-card-subtitle>
+                            <h3>  Unmatched 60 M </h3>
                             </v-card>
                   </v-flex>
               </v-layout>
@@ -153,7 +213,8 @@
           <v-flex xs12  sm12 md8>
          
       
-      <v-card flat class=" ma-1" v-for="project in filteredProjects" :key="project._id">
+      <v-card flat class=" ma-1" v-for="(project, index) in filteredProjects" 
+      v-if='index <= (currentPage*10) && index >= ((currentPage-1)*10)' :key="project._id">
       <v-layout row wrap :class ="`pa-1 project ${project.telco}`">
       <v-flex xs12 md2>
       <div class="caption grey--text">
@@ -219,8 +280,8 @@
   </div>
       </v-card>
           <v-pagination
-      v-model="filteredProjects"
-      :length="10"
+      v-model="currentPage"
+      :length="Math.round(filteredProjects.length/10)"
     ></v-pagination>
            </v-flex>
 
@@ -258,18 +319,121 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
    watch: {
-
+     dateStart(value){
+       if(value !== null)
+       {
+         this.filterDate()
+         this.loadDonuts();
+    this.ninemobile.sections[1].value = ( this.ninemobile.sections[1].value / 400 ) * 100;
+    this.airtel.sections[1].value  = ( this.airtel.sections[1].value / 400 ) * 100;
+    this.mtn.sections[1].value = ( this.mtn.sections[1].value / 400 ) * 100;
+    this.glo.sections[1].value = ( this.glo.sections[1].value / 400 ) * 100;
+       }
+     },
+     dateEnd(value){
+       if(value !== null)
+       {
+         this.filterDate()
+         this.loadDonuts();
+    this.ninemobile.sections[1].value = ( this.ninemobile.sections[1].value / 400 ) * 100;
+    this.airtel.sections[1].value  = ( this.airtel.sections[1].value / 400 ) * 100;
+    this.mtn.sections[1].value = ( this.mtn.sections[1].value / 400 ) * 100;
+    this.glo.sections[1].value = ( this.glo.sections[1].value / 400 ) * 100;
+      
+       }
+     },
+     sortBy(value){
+     if(value == "Matched"){
+       this.filteredProjects = []
+      this.projects.forEach(element => {
+        if(element.isMatched)
+        {
+          this.filteredProjects.shift(element)
+        }else{
+          this.filteredProjects.push(element)
+        }
+      });
+    }
+    if(value == "Returned"){
+       this.filteredProjects = []
+      this.projects.forEach(element => {
+        if(element.isReturned)
+        {
+          this.filteredProjects.shift(element)
+        }else{
+          this.filteredProjects.push(element)
+        }
+      });
+    }
+    if(value == "Migrated"){
+       this.filteredProjects = []
+      this.projects.forEach(element => {
+        if(element.isMigrated)
+        {
+          this.filteredProjects.shift(element)
+        }else{
+          this.filteredProjects.push(element)
+        }
+      });
+    }
+    if(value == "Processing"){
+       this.filteredProjects = []
+      this.projects.forEach(element => {
+        if(element.isFresh)
+        {
+          this.filteredProjects.shift(element)
+        }else{
+          this.filteredProjects.push(element)
+        }
+      });
+    }
+    if(value == "Gender - Female"){
+       this.filteredProjects = []
+      this.projects.forEach(element => {
+        if(element.gender == "female")
+        {
+          this.filteredProjects.shift(element)
+        }else{
+          this.filteredProjects.push(element)
+        }
+      });
+    }
+    if(value == "Gender - Male"){
+       this.filteredProjects = []
+      this.projects.forEach(element => {
+        if(element.gender !== "female")
+        {
+          this.filteredProjects.shift(element)
+        }else{
+          this.filteredProjects.push(element)
+        }
+      });
+    }
+     
+     if(value == "Score(High to Low)"){
+      this.filteredProjects.sort((a, b) => b.score- a.score )
+    }
+    if(value == "Score(Low to High)"){
+      this.filteredProjects.sort((a, b) => a.score- b.score )
+    }
+     if(value == "State"){
+      this.filteredProjects.sort((a, b) => a.state.localeCompare(b.state))
+    }
+    if(value == "Telco"){
+      this.filteredProjects.sort((a, b) => a.telco.localeCompare(b.telco))
+    }
+   
+     },
             timerCount: {
                 handler(value) {
-
                     if (value > 0) {
                         setTimeout(() => {
                             this.timerCount--;
                         }, 1000);
                     }
-
                 },
                 immediate: true // This ensures the watcher is triggered upon creation
             }
@@ -277,16 +441,27 @@ export default {
    computed:{
     count:'',
      filteredProjects:function(){
-      return this.projects.filter((p)=>{
-        if(new Date(p.dateMatched) >= new Date("01/10/2021"))
-
-        return p//.telco.match('MTN')
-       });
+       return this.projects;
+      // return this.projects.filter((p)=>{
+      //   if(new Date(p.dateMatched) >= new Date("01/10/2021"))
+      //   return p//.telco.match('MTN')
+      //  });
         
      }
    },
   data() {
     return {
+      sm9:0,
+      sairtel:0,
+      smtn:0,
+      sntel:0,
+      projectsTemp:[],
+      sortBy:null,
+      dateStart: null,
+      dateEnd: null,
+      menu: false,
+      menu2: false,
+      currentPage:1,
       timerCount:50,
        type: "line",
       width: "100%",
@@ -325,114 +500,12 @@ export default {
         "value": "320200"
       }]
     },
-       projects:[
-  {
-    "_id": "604ca6d1cc94697af166a7bc",
-    "index": 0,
-    "guid": "c037eeb4-6c26-44d7-aa10-200b7c7867f5",
-    "isActive": true,
-    "isMatched": false,
-    "isMigrated": false,
-    "isReturned": false,
-    "dateMatched": "Sat Jan 02 2021 16:51:27 GMT+0100 (West Africa Standard Time)",
-    "telco": "nineMobile",
-    "state": "Edo",
-    "picture": "http://placehold.it/32x32",
-    "age": 53,
-    "score": 60,
-    "eyeColor": "blue",
-    "name": "Tran Levy",
-    "gender": "male",
-    "phone": "+234 (822) 596-3646",
-    "address": "578 Polhemus Place, Defiance, Palau, 7616"
-  },
-  {
-    "_id": "604ca6d1cec3fd259236c18d",
-    "index": 1,
-    "guid": "7c971bbf-a52b-4fb8-a7ec-9e44cd2bdcd8",
-    "isActive": false,
-    "isMatched": true,
-    "isMigrated": true,
-    "isReturned": true,
-    "dateMatched": "Fri Jan 29 2021 18:59:42 GMT+0100 (West Africa Standard Time)",
-    "telco": "Globacom",
-    "state": "Oyo",
-    "picture": "http://placehold.it/32x32",
-    "age": 71,
-    "score": 31,
-    "eyeColor": "green",
-    "name": "Aline Jacobson",
-    "gender": "female",
-    "phone": "+234 (867) 558-3228",
-    "address": "739 Beayer Place, Leland, Illinois, 9093"
-  },
-  
-  {
-    "_id": "604ca6d181f93a5dc7dbae3d",
-    "index": 50,
-    "guid": "4199761f-be57-458c-be9b-f265226534cd",
-    "isActive": true,
-    "isMatched": true,
-    "isMigrated": true,
-    "isReturned": true,
-    "dateMatched": "Thu Jan 28 2021 17:18:41 GMT+0100 (West Africa Standard Time)",
-    "telco": "MTN",
-    "state": "Edo",
-    "picture": "http://placehold.it/32x32",
-    "age": 29,
-    "score": 79,
-    "eyeColor": "green",
-    "name": "Gonzales Ryan",
-    "gender": "male",
-    "phone": "+234 (972) 453-2966",
-    "address": "633 Louise Terrace, Curtice, Texas, 379"
-  },
-  
-  {
-    "_id": "604ca6d1111640d92df68a64",
-    "index": 53,
-    "guid": "38b395dd-09bf-41fe-ad27-22e016974dca",
-    "isActive": false,
-    "isMatched": false,
-    "isMigrated": false,
-    "isReturned": true,
-    "dateMatched": "Tue Feb 09 2021 05:26:37 GMT+0100 (West Africa Standard Time)",
-    "telco": "nineMobile",
-    "state": "Niger",
-    "picture": "http://placehold.it/32x32",
-    "age": 14,
-    "score": 89,
-    "eyeColor": "green",
-    "name": "Young Logan",
-    "gender": "female",
-    "phone": "+234 (971) 496-3856",
-    "address": "794 Franklin Avenue, Baker, Virgin Islands, 2320"
-  },
-  {
-    "_id": "604ca6d1483b1856eb82bae9",
-    "index": 54,
-    "guid": "dcd866a9-cfae-4139-9c3d-871e2d5ca45b",
-    "isActive": false,
-    "isMatched": false,
-    "isMigrated": false,
-    "isReturned": false,
-    "dateMatched": "Fri Feb 12 2021 02:08:35 GMT+0100 (West Africa Standard Time)",
-    "telco": "Smile",
-    "state": "Bauchi",
-    "picture": "http://placehold.it/32x32",
-    "age": 35,
-    "score": 36,
-    "eyeColor": "blue",
-    "name": "Serrano Clements",
-    "gender": "male",
-    "phone": "+234 (960) 476-2517",
-    "address": "738 Dikeman Street, Longoria, Mississippi, 4374"
-  }
-],
+       projects:[],
+items:[],
       mtn: {
         size: 130,
         telco:"MTN",
-        value:35,
+        value:0,
         sections: [
         	{ label: 'Processing', value: 65, color: '#eeeeee' },
           { label: 'Matched', value: 35, color: 'orange' },
@@ -445,7 +518,7 @@ export default {
       },
        airtel: {
         size: 130,
-        value:20,
+        value:0,
         telco:"Airtel",
         sections: [
         	{ label: 'Processing', value: 75, color: '#eeeeee' },
@@ -460,7 +533,7 @@ export default {
        glo: {
         size: 130,
         telco:"Globacom",
-        value:21,
+        value:0,
         sections: [
         	{ label: 'Processing', value: 79, color: '#eeeeee' },
           { label: 'Matched', value: 21, color: '#3db83a' },
@@ -474,7 +547,7 @@ export default {
   ninemobile: {
         size: 130,
         telco:"9Mobile",
-        value:38,
+        value:0,
         sections: [
         	{ label: 'Processing', value: 62, color: '#eeeeee' },
           { label: 'Matched', value: 38, color: 'green' },
@@ -486,24 +559,77 @@ export default {
         // specify more props here
       },
       
-
     
     }
   },
+  created(){
+    
+    this.loadData();
+    this.loadDonuts();
+    this.ninemobile.sections[1].value = ( this.ninemobile.sections[1].value / 400 ) * 100;
+    this.airtel.sections[1].value  = ( this.airtel.sections[1].value / 400 ) * 100;
+    this.mtn.sections[1].value = ( this.mtn.sections[1].value / 400 ) * 100;
+    this.glo.sections[1].value = ( this.glo.sections[1].value / 400 ) * 100;
+  },
   methods: {
-    sortBy(prop) {
-      this.projects.sort((a,b) => a[prop] < b[prop] ? -1 : 1)
-    }
+    async loadDonuts(){
+      await this.projects.forEach(element => {
+        // console.log(element.isMigrated)
+        if(element.telco == "Ntel" && element.isMigrated) this.glo.sections[1].value = this.glo.sections[1].value + 1;
+        if(element.telco == "nineMobile" && element.isMigrated) this.ninemobile.sections[1].value = this.ninemobile.sections[1].value + 1;
+        if(element.telco == "MTN" && element.isMigrated) this.mtn.sections[1].value = this.mtn.sections[1].value + 1;
+        if(element.telco == "Aitel" && element.isMigrated) this.airtel.sections[1].value = this.airtel.sections[1].value + 1;
+      });
+    },
+    async loadData(){
+      await axios.get('/generated.json').then((res) => {
+      this.projects = res.data
+      this.projectsTemp = res.data
+      
+    })
+    },
+    async filterDate(){
+      let start = this.dateStart ? new Date(this.dateStart) : null 
+      let end = this.dateEnd  ?  new Date(this.dateEnd) : null 
+      this.projects = [];
+      await this.projectsTemp.forEach(element => {
+        if(start && end)
+        {
+          if(Date.parse(element.dateMatched) > Date.parse(start) && Date.parse(element.dateMatched) < Date.parse(end)){
+            this.projects.push(element)
+          }
+        }else if(start && !end)
+        {
+    
+            if( Date.parse(element.dateMatched) > Date.parse(start))
+            {
+              console.log('matched')
+            this.projects.push(element)
+            }
+        }
+        else if(!start && end)
+        {
+            if( Date.parse(element.dateMatched) < Date.parse(end))
+            {
+            this.projects.push(element)
+            }
+        }
+      });
+    },
+    // sortBy(prop) {
+    //   this.projects.sort((a,b) => a[prop] < b[prop] ? -1 : 1)
+    // }
   }
 }
 </script>
 
 <style>
-
+.v-text-field__details{
+  display:none;
+}
 .cdc-text h1{
   margin-bottom:-10px;
 }
-
 .project.complete{
   border-left: 4px solid #3cd1c2;
 }
@@ -522,5 +648,4 @@ export default {
 .v-chip.overdue{
   background: #f83e70;
 }
-
 </style>
