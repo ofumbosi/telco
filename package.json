@@ -12,6 +12,7 @@
     "@vue/cli-plugin-babel": "^3.0.5",
     "@vue/cli-plugin-eslint": "^3.0.5",
     "@vue/cli-service": "^3.0.5",
+    "axios": "^0.21.1",
     "chart.js": "^2.9.4",
     "express": "^4.17.1",
     "fusioncharts": "^3.16.0",
